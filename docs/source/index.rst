@@ -1,160 +1,277 @@
 ANTI-SCAMMER API DOCUMENTATION
-Version: v1 Base URL: https://overclinical-kenia-loculicidally.ngrok-free.dev
+=============================
 
-OVERVIEW
-The AntiScammer API provides scammer ID lookup, message canonicalization, and ML-based scam detection. All protected endpoints require an API key sent via HTTP headers.
+Version
+-------
+v1
 
-AUTHENTICATION
+Base URL
+--------
+``https://overclinical-kenia-loculicidally.ngrok-free.dev``
+
+
+Overview
+--------
+The AntiScammer API provides:
+
+- Scammer ID lookup
+- Message canonicalization
+- ML-based scam detection
+
+All protected endpoints require an API key sent via HTTP headers.
+
+
+Authentication
+--------------
 All protected endpoints require an API key.
 
-Header: X-API-Key: YOUR_API_KEY
+**Header**
+::
 
-Notes: - API keys expire - Expired, missing, or invalid keys return HTTP 401 - API keys must be sent as headers (not query parameters) - For ngrok usage, include:
+   X-API-Key: YOUR_API_KEY
 
-ngrok-skip-browser-warning: true
-HEALTH CHECK
-GET /health
+**Notes**
 
-Authentication: Not required
+- API keys expire
+- Expired, missing, or invalid keys return **HTTP 401**
+- API keys must be sent as headers (not query parameters)
+- When using ngrok, include the following header:
 
-Description: Check if the API is online.
+::
 
-Example request: curl https://overclinical-kenia-loculicidally.ngrok-free.dev/health
+   ngrok-skip-browser-warning: true
 
--H "ngrok-skip-browser-warning: true"
-Example response: {
 
-"ok": true
-}
+Health Check
+------------
+**GET** ``/health``
 
-SCAMMER LOOKUP (SINGLE)
-GET /lookup/{user_id}
+**Authentication**
+Not required
 
-Authentication: Required
+**Description**
+Check if the API is online.
 
-Description: Check if a Discord user ID is flagged as a scammer.
+**Example Request**
+::
 
-Path Parameters: - user_id (string)
+   curl https://overclinical-kenia-loculicidally.ngrok-free.dev/health \
+     -H "ngrok-skip-browser-warning: true"
 
-Discord user ID. Non-digit characters are stripped automatically.
-Query Parameters: - include_reason (boolean, optional)
+**Example Response**
+::
 
-If true, includes the scam reason when flagged.
-Example request: curl "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup/992618366844014592?include_reason=true"
+   {
+     "ok": true
+   }
 
--H "X-API-Key: YOUR_API_KEY" -H "ngrok-skip-browser-warning: true"
-Example response (flagged): {
 
-"user_id": "992618366844014592", "is_flagged": true, "reason": "Nitro phishing scam"
-}
+Scammer Lookup (Single)
+----------------------
+**GET** ``/lookup/{user_id}``
 
-Example response (not flagged): {
+**Authentication**
+Required
 
-"user_id": "992618366844014592", "is_flagged": false
-}
+**Description**
+Check if a Discord user ID is flagged as a scammer.
 
-SCAMMER LOOKUP (BATCH)
-POST /lookup
+**Path Parameters**
 
-Authentication: Required
+- ``user_id`` (string)  
+  Discord user ID. Non-digit characters are stripped automatically.
 
-Description: Lookup multiple Discord user IDs in a single request.
+**Query Parameters**
 
-Request Body: {
+- ``include_reason`` (boolean, optional)  
+  If true, includes the scam reason when flagged.
 
-"user_ids": [
-"992618366844014592", "123456789012345678"
-], "include_reason": true
+**Example Request**
+::
 
-}
+   curl "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup/992618366844014592?include_reason=true" \
+     -H "X-API-Key: YOUR_API_KEY" \
+     -H "ngrok-skip-browser-warning: true"
 
-Limits: - 1 to 500 user IDs per request
+**Example Response (Flagged)**
+::
 
-Example request: curl -X POST "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup"
+   {
+     "user_id": "992618366844014592",
+     "is_flagged": true,
+     "reason": "Nitro phishing scam"
+   }
 
--H "Content-Type: application/json" -H "X-API-Key: YOUR_API_KEY" -H "ngrok-skip-browser-warning: true" -d '{
+**Example Response (Not Flagged)**
+::
 
-"user_ids": ["992618366844014592"], "include_reason": true
-}'
+   {
+     "user_id": "992618366844014592",
+     "is_flagged": false
+   }
 
-Example response: {
 
-"count": 1, "results": [
+Scammer Lookup (Batch)
+---------------------
+**POST** ``/lookup``
 
-{
-"user_id": "992618366844014592", "is_flagged": true, "reason": "Crypto impersonation scam"
-}
+**Authentication**
+Required
 
-]
+**Description**
+Lookup multiple Discord user IDs in a single request.
 
-}
+**Request Body**
+::
 
-MESSAGE CANONICALIZATION
-POST /canonicalize
+   {
+     "user_ids": [
+       "992618366844014592",
+       "123456789012345678"
+     ],
+     "include_reason": true
+   }
 
-Authentication: Required
+**Limits**
 
-Description: Normalize a message and detect obfuscation techniques such as: - Vertical text - Emoji padding - Markdown abuse - Excessive whitespace
+- 1 to 500 user IDs per request
 
-Request Body: {
+**Example Request**
+::
 
-"message": "FnRnEnEnNnInTnRnO"
-}
+   curl -X POST "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup" \
+     -H "Content-Type: application/json" \
+     -H "X-API-Key: YOUR_API_KEY" \
+     -H "ngrok-skip-browser-warning: true" \
+     -d '{
+       "user_ids": ["992618366844014592"],
+       "include_reason": true
+     }'
 
-Example response: {
+**Example Response**
+::
 
-"raw": "FnRnEnEnNnInTnRnO", "clean": "F R E E N I T R O", "joined": "FREENITRO", "obfuscation": {
+   {
+     "count": 1,
+     "results": [
+       {
+         "user_id": "992618366844014592",
+         "is_flagged": true,
+         "reason": "Crypto impersonation scam"
+       }
+     ]
+   }
 
-"looks_vertical": true, "line_count": 9, "single_char_line_ratio": 1.0, "whitespace_ratio": 0.42
-}
 
-}
+Message Canonicalization
+------------------------
+**POST** ``/canonicalize``
 
-SCAM DETECTION
-POST /detect
+**Authentication**
+Required
 
-Authentication: Required
+**Description**
+Normalize a message and detect obfuscation techniques such as:
 
-Description: Runs ML-based scam detection with optional conversation context.
+- Vertical text
+- Emoji padding
+- Markdown abuse
+- Excessive whitespace
 
-Request Body: {
+**Request Body**
+::
 
-"message": "Free nitro click here", "context_messages": [
+   {
+     "message": "FnRnEnEnNnInTnRnO"
+   }
 
-{
-"created_at": "2025-12-16T21:00:00", "author": "user123", "content": "check this out"
-}
+**Example Response**
+::
 
-]
+   {
+     "raw": "FnRnEnEnNnInTnRnO",
+     "clean": "F R E E N I T R O",
+     "joined": "FREENITRO",
+     "obfuscation": {
+       "looks_vertical": true,
+       "line_count": 9,
+       "single_char_line_ratio": 1.0,
+       "whitespace_ratio": 0.42
+     }
+   }
 
-}
 
-Example response: {
+Scam Detection
+--------------
+**POST** ``/detect``
 
-"probability": 97.3, "is_scam": true, "reason": "Known Discord Nitro phishing pattern with link bait."
-}
+**Authentication**
+Required
 
-Detection Notes: - Probability ranges from 0 to 100 - Strong obfuscation may force is_scam = true - Hard bypass rules override model output
+**Description**
+Runs ML-based scam detection with optional conversation context.
 
-ERROR RESPONSES
-401 Unauthorized: {
+**Request Body**
+::
 
-"detail": "Missing API key"
-}
+   {
+     "message": "Free nitro click here",
+     "context_messages": [
+       {
+         "created_at": "2025-12-16T21:00:00",
+         "author": "user123",
+         "content": "check this out"
+       }
+     ]
+   }
 
-{
-"detail": "API key expired"
-}
+**Example Response**
+::
 
-400 Bad Request: {
+   {
+     "probability": 97.3,
+     "is_scam": true,
+     "reason": "Known Discord Nitro phishing pattern with link bait."
+   }
 
-"detail": "Invalid user_id"
-}
+**Detection Notes**
 
-SECURITY NOTES
-Do not cache lookup responses
-Do not expose API keys publicly
-Use HTTPS only
-Rotate API keys periodically
-SUPPORT
+- Probability ranges from 0 to 100
+- Strong obfuscation may force ``is_scam = true``
+- Hard bypass rules override model output
+
+
+Error Responses
+---------------
+**401 Unauthorized**
+::
+
+   {
+     "detail": "Missing API key"
+   }
+
+::
+
+   {
+     "detail": "API key expired"
+   }
+
+**400 Bad Request**
+::
+
+   {
+     "detail": "Invalid user_id"
+   }
+
+
+Security Notes
+--------------
+- Do not cache lookup responses
+- Do not expose API keys publicly
+- Use HTTPS only
+- Rotate API keys periodically
+
+
+Support
+-------
 For access requests, issues, or partnerships, contact the AntiScammer development team.
