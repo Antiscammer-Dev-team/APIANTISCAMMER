@@ -2,9 +2,9 @@
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'AntiscammerAPI'
+copyright = '2025, Antiscam dev team'
+author = 'Antiscam dev team'
 
 release = '0.1'
 version = '0.1.0'
