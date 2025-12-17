@@ -3,7 +3,7 @@ ANTI-SCAMMER API DOCUMENTATION
 
 Version
 -------
-v1
+v1.2
 
 Base URL
 --------
@@ -266,11 +266,10 @@ Error Responses
 
 Security Notes
 --------------
-- Do not cache lookup responses
 - Do not expose API keys publicly
 - Use HTTPS only
-- Rotate API keys periodically
-
+- Rotate API keys periodically (Ask ram2 for new keys. We can provide any keys as you ask)
+- Dont constantly flood the API (Heavy traffic is expected but dont create a inf loop)
 
 Support
 -------
