@@ -26,9 +26,10 @@ All protected endpoints require an API key sent via HTTP headers.
 All protected endpoints require an API key.
 
 ### Required Headers
-
-X-API-Key: YOUR_API_KEY  
+```text
+X-API-Key: YOUR_API_KEY
 ngrok-skip-browser-warning: true
+```
 
 ### Notes
 
@@ -43,19 +44,23 @@ ngrok-skip-browser-warning: true
 
 ### GET /health
 
-Authentication: Not required
+**Authentication:** Not required
 
-Description:  
+**Description:**  
 Check if the API is online.
 
-Example Request:
+### Example Request
+```bash
 curl https://overclinical-kenia-loculicidally.ngrok-free.dev/health \
   -H "ngrok-skip-browser-warning: true"
+```
 
-Example Response:
+### Example Response
+```json
 {
   "ok": true
 }
+```
 
 ---
 
@@ -63,36 +68,44 @@ Example Response:
 
 ### GET /lookup/{user_id}
 
-Authentication: Required
+**Authentication:** Required
 
-Description:  
+**Description:**  
 Check if a Discord user ID is flagged as a scammer.
 
-Path Parameters:
-- user_id (string)  
+### Path Parameters
+
+- `user_id` (string)  
   Discord user ID. Non-digit characters are stripped automatically.
 
-Query Parameters:
-- include_reason (boolean, optional)  
+### Query Parameters
+
+- `include_reason` (boolean, optional)  
   If true, includes the scam reason when flagged.
 
-Example Request:
+### Example Request
+```bash
 curl "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup/992618366844014592?include_reason=true" \
   -H "X-API-Key: YOUR_API_KEY" \
   -H "ngrok-skip-browser-warning: true"
+```
 
-Example Response (Flagged):
+### Example Response (Flagged)
+```json
 {
   "user_id": "992618366844014592",
   "is_flagged": true,
   "reason": "Nitro phishing scam"
 }
+```
 
-Example Response (Not Flagged):
+### Example Response (Not Flagged)
+```json
 {
   "user_id": "992618366844014592",
   "is_flagged": false
 }
+```
 
 ---
 
@@ -100,12 +113,13 @@ Example Response (Not Flagged):
 
 ### POST /lookup
 
-Authentication: Required
+**Authentication:** Required
 
-Description:  
+**Description:**  
 Lookup multiple Discord user IDs in a single request.
 
-Request Body:
+### Request Body
+```json
 {
   "user_ids": [
     "992618366844014592",
@@ -113,11 +127,14 @@ Request Body:
   ],
   "include_reason": true
 }
+```
 
-Limits:
+### Limits
+
 - 1 to 500 user IDs per request
 
-Example Request:
+### Example Request
+```bash
 curl -X POST "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup" \
   -H "Content-Type: application/json" \
   -H "X-API-Key: YOUR_API_KEY" \
@@ -126,8 +143,10 @@ curl -X POST "https://overclinical-kenia-loculicidally.ngrok-free.dev/lookup" \
     "user_ids": ["992618366844014592"],
     "include_reason": true
   }'
+```
 
-Example Response:
+### Example Response
+```json
 {
   "count": 1,
   "results": [
@@ -138,39 +157,7 @@ Example Response:
     }
   ]
 }
-
----
-
-## Message Canonicalization
-
-### POST /canonicalize
-
-Authentication: Required
-
-Description:  
-Normalize a message and detect obfuscation techniques such as:
-- Vertical text
-- Emoji padding
-- Markdown abuse
-- Excessive whitespace
-
-Request Body:
-{
-  "message": "FnRnEnEnNnInTnRnO"
-}
-
-Example Response:
-{
-  "raw": "FnRnEnEnNnInTnRnO",
-  "clean": "F R E E N I T R O",
-  "joined": "FREENITRO",
-  "obfuscation": {
-    "looks_vertical": true,
-    "line_count": 9,
-    "single_char_line_ratio": 1.0,
-    "whitespace_ratio": 0.42
-  }
-}
+```
 
 ---
 
@@ -178,12 +165,13 @@ Example Response:
 
 ### POST /detect
 
-Authentication: Required
+**Authentication:** Required
 
-Description:  
+**Description:**  
 Runs ML-based scam detection with optional conversation context.
 
-Request Body:
+### Request Body
+```json
 {
   "message": "Free nitro click here",
   "context_messages": [
@@ -194,17 +182,21 @@ Request Body:
     }
   ]
 }
+```
 
-Example Response:
+### Example Response
+```json
 {
   "probability": 97.3,
   "is_scam": true,
   "reason": "Known Discord Nitro phishing pattern with link bait."
 }
+```
 
-Detection Notes:
+### Detection Notes
+
 - Probability ranges from 0 to 100
-- Strong obfuscation may force is_scam = true
+- Strong obfuscation may force `is_scam = true`
 - Hard bypass rules override model output
 
 ---
@@ -213,20 +205,21 @@ Detection Notes:
 
 ### POST /banrequest
 
-Authentication: Required
+**Authentication:** Required
 
-Description:  
+**Description:**  
 Submit a request for a user to be banned.  
-This endpoint is intended for moderators, partners, and mass reports.  
 Proof is required.
 
-Form Fields:
-- user_id (string, required)
-- reason (string, required)
-- notes (string, optional)
-- proof (file, required)
+### Form Fields
 
-Example Request:
+- `user_id` (string, required)
+- `reason` (string, required)
+- `notes` (string, optional)
+- `proof` (file, required)
+
+### Example Request
+```bash
 curl -X POST "https://overclinical-kenia-loculicidally.ngrok-free.dev/banrequest" \
   -H "X-API-Key: YOUR_API_KEY" \
   -H "ngrok-skip-browser-warning: true" \
@@ -234,8 +227,10 @@ curl -X POST "https://overclinical-kenia-loculicidally.ngrok-free.dev/banrequest
   -F "reason=Testing via API" \
   -F "notes=Testing" \
   -F "proof=@proof.png"
+```
 
-Example Response:
+### Example Response
+```json
 {
   "case_id": "BD42775FBBCB",
   "created_at": "2026-01-14T15:50:36.324074+00:00",
@@ -250,24 +245,31 @@ Example Response:
   },
   "status": "pending"
 }
+```
 
 ---
 
 ## Error Responses
 
-401 Unauthorized:
+### 401 Unauthorized
+```json
 {
   "detail": "Missing API key"
 }
+```
 
+```json
 {
   "detail": "API key expired"
 }
+```
 
-400 Bad Request:
+### 400 Bad Request
+```json
 {
   "detail": "Invalid user_id"
 }
+```
 
 ---
 
@@ -275,7 +277,7 @@ Example Response:
 
 - Do not expose API keys publicly
 - Use HTTPS only
-- Rotate API keys periodically (contact Ram2 for new keys)
+- Rotate API keys periodically
 - Heavy traffic is expected, but do not flood the API or create infinite loops
 
 ---
