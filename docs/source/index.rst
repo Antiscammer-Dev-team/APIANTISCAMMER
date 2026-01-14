@@ -285,7 +285,83 @@ Proof is required.
      },
      "status": "pending"
    }
+Ban Request Lookup
+------------------
+**GET** ``/banrequest/{case_id}``
 
+**Authentication**
+Required
+
+**Description**
+Retrieve the current status and details of a previously submitted ban request.
+
+This endpoint allows API users to check whether a case is still pending,
+approved, or rejected. The endpoint is read-only.
+
+**Path Parameters**
+
+- ``case_id`` (string)  
+  The case identifier returned when the ban request was created.
+
+**Example Request**
+::
+
+   curl "https://overclinical-kenia-loculicidally.ngrok-free.dev/banrequest/BD42775FBBCB" \
+     -H "X-API-Key: YOUR_API_KEY" \
+     -H "ngrok-skip-browser-warning: true"
+
+**Example Response (Pending)**
+::
+
+   {
+     "case_id": "BD42775FBBCB",
+     "status": "pending",
+     "created_at": "2026-01-14T15:50:36.324074+00:00",
+     "user_id": "1372638432412827771",
+     "reason": "Testing via API",
+     "notes": "Testing",
+     "proof_file": "proof.png",
+     "reporter_meta": {
+       "expires_at": "3072-12-31T23:59:59Z",
+       "label": "Modara"
+     }
+   }
+
+**Example Response (Approved)**
+::
+
+   {
+     "case_id": "BD42775FBBCB",
+     "status": "approved",
+     "created_at": "2026-01-14T15:50:36.324074+00:00",
+     "user_id": "1372638432412827771",
+     "reason": "Testing via API",
+     "notes": "Testing",
+     "proof_file": "proof.png",
+     "review": {
+       "reviewed_at": "2026-01-15T02:41:10Z",
+       "reviewed_by": "Ram2",
+       "decision": "Verified proof, ban executed"
+     }
+   }
+
+**Example Response (Rejected)**
+::
+
+   {
+     "case_id": "BD42775FBBCB",
+     "status": "rejected",
+     "created_at": "2026-01-14T15:50:36.324074+00:00",
+     "user_id": "1372638432412827771",
+     "reason": "Testing via API",
+     "notes": "Testing",
+     "proof_file": "proof.png",
+     "review": {
+       "reviewed_at": "2026-01-15T02:41:10Z",
+       "reviewed_by": "Ram2",
+       "decision": "Insufficient evidence"
+     }
+   }
 
 Error Responses
 ---------------
