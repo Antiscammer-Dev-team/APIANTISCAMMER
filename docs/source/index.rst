@@ -240,6 +240,27 @@ Runs ML-based scam detection with optional conversation context.
 - Strong obfuscation may force ``is_scam = true``
 - Hard bypass rules override model output
 
+Ban request
+---------------
+Post /banrequest
+**Authentication**
+Required
+
+Description: A way for API users to send me requests for users to be banned. Ideal for mass reports. REQUIRES PROOF
+
+Example request:
+curl -X POST "https://your-api.ngrok-free.dev/banrequest" \
+  -H "X-API-Key: antiscammer-internal-KEY-456" \
+  -F "user_id=546449742318534681" \
+  -F "reason=Crypto wallet drain scam" \
+  -F "notes=User DM’d multiple members with a fake support link" \
+  -F "proof=@./evidence/screenshot1.png"
+
+Response: 
+{
+  "ok": true,
+  "case_id": "A9F3D8C21B7E"
+}
 
 Error Responses
 ---------------
