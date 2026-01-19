@@ -229,6 +229,9 @@ Runs ML-based scam detection with optional conversation context.
    {
      "probability": 97.3,
      "is_scam": true,
+     "decision": true,
+     "uncertanty": false,
+     "confidence": "high",
      "reason": "Known Discord Nitro phishing pattern with link bait."
    }
 
